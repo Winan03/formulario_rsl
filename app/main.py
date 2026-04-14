@@ -38,9 +38,12 @@ models.Base.metadata.create_all(bind=database.engine)
 app = FastAPI(title="Evaluación PRISMA", version="1.1.0")
 security = HTTPBasic()
 
+# Rutas absolutas para producción y Vercel
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # Mount static and templates
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 # Dependency DB
 def get_db():
