@@ -66,6 +66,38 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        /* Tabs styling */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -78,62 +110,146 @@
     <div class="admin-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div>
-                <h2 style="margin: 0;">Panel de Administrador - Resultados</h2>
-                <p style="margin: 5px 0 0 0; color: #666;">Vista tabular de las respuestas registradas.</p>
+                <h2 style="margin: 0;">Panel de Administrador - Resultados Combinados</h2>
+                <p style="margin: 5px 0 0 0; color: #666;">Selecciona la pestaña del formulario que deseas visualizar.</p>
             </div>
-            <a href="/admin/export" class="btn-home" style="background: #27ae60; margin: 0; padding: 10px 20px;">Exportar a CSV</a>
+            <a href="/" class="btn-home" style="margin: 0; padding: 10px 20px;">Volver a Inicio</a>
         </div>
         
-        <table>
-            <thead>
-                <tr>
-                    <th title="ID de Registro">ID</th>
-                    <th title="Fecha y Hora">Fecha</th>
-                    <th title="Nombre del participante">Nombre</th>
-                    <th title="Correo electrónico">Correo</th>
-                    <th title="Tiempo invertido en minutos">Tiempo (min)</th>
-                    <th title="Ajustar palabras clave y aplicar filtros">Q1: Búsqueda y Filtros</th>
-                    <th title="Exportar y consolidar en Excel">Q2: Exportar y Consolidar</th>
-                    <th title="Eliminar duplicados visualmente">Q3: Duplicados Visual</th>
-                    <th title="Percepción de inseguridad y errores en Excel">Q4: Inseguridad Excel</th>
-                    <th title="Fatiga visual al leer resúmenes">Q5: Fatiga Screening</th>
-                    <th title="Miedo a descartar e impacto en concentración">Q6: Miedo al Descarte</th>
-                    <th title="Lectura y tipeo manual de la matriz">Q7: Síntesis y Matriz</th>
-                    <th title="Miedo a la falta de reproducibilidad">Q8: Reproducibilidad</th>
-                    <th title="Pregunta cualitativa abierta">Q9: Cuello de Botella</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for resp in responses %}
-                <tr>
-                    <td>{{ resp.id }}</td>
-                    <td>{{ resp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                    <td>{{ resp.name }}</td>
-                    <td>{{ resp.email }}</td>
-                    <td>{{ resp.time_minutes }}</td>
-                    <td>{{ resp.q1_filters }}</td>
-                    <td>{{ resp.q2_export }}</td>
-                    <td>{{ resp.q3_dedup_visual }}</td>
-                    <td>{{ resp.q4_dedup_error }}</td>
-                    <td>{{ resp.q5_screen_fatigue }}</td>
-                    <td>{{ resp.q6_screen_fear }}</td>
-                    <td>{{ resp.q7_synthesis_slow }}</td>
-                    <td>{{ resp.q8_reproducibility }}</td>
-                    <td class="truncate" title="{{ resp.q9_bottleneck }}">{{ resp.q9_bottleneck }}</td>
-                    <td>
-                        <form action="/admin/delete/{{ resp.id }}" method="POST" onsubmit="return confirm('¿Seguro de borrar esta fila?');">
-                            <button type="submit" class="btn-delete">Borrar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="15" style="text-align: center; padding: 2rem;">No hay respuestas aún.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- Tabs Nav -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('manual')">Encuestas Manuales</button>
+            <button class="tab-btn" onclick="switchTab('ai')">Encuestas IA</button>
+        </div>
+
+        <!-- Tab: Manual -->
+        <div id="tab-manual" class="tab-content active">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                <a href="/admin/export/manual" class="btn-home" style="background: #27ae60; margin: 0; padding: 10px 20px;">Descargar CSV - Manual</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th title="ID de Registro">ID</th>
+                        <th title="Fecha y Hora">Fecha</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th title="Tiempo invertido en minutos">Tiempo (min)</th>
+                        <th title="Ajustar palabras clave y aplicar filtros">Q1: Búsqueda y Filtros</th>
+                        <th title="Exportar y consolidar en Excel">Q2: Exportar y Consolidar</th>
+                        <th title="Eliminar duplicados visualmente">Q3: Duplicados Visual</th>
+                        <th title="Percepción de inseguridad y errores en Excel">Q4: Inseguridad Excel</th>
+                        <th title="Fatiga visual al leer resúmenes">Q5: Fatiga Screening</th>
+                        <th title="Miedo a descartar e impacto en concentración">Q6: Miedo al Descarte</th>
+                        <th title="Lectura y tipeo manual de la matriz">Q7: Síntesis y Matriz</th>
+                        <th title="Miedo a la falta de reproducibilidad">Q8: Reproducibilidad</th>
+                        <th title="Pregunta cualitativa abierta">Q9: Cuello de Botella</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resp in resp_manual %}
+                    <tr>
+                        <td>{{ resp.id }}</td>
+                        <td>{{ resp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ resp.name }}</td>
+                        <td>{{ resp.email }}</td>
+                        <td>{{ resp.time_minutes }}</td>
+                        <td>{{ resp.q1_filters }}</td>
+                        <td>{{ resp.q2_export }}</td>
+                        <td>{{ resp.q3_dedup_visual }}</td>
+                        <td>{{ resp.q4_dedup_error }}</td>
+                        <td>{{ resp.q5_screen_fatigue }}</td>
+                        <td>{{ resp.q6_screen_fear }}</td>
+                        <td>{{ resp.q7_synthesis_slow }}</td>
+                        <td>{{ resp.q8_reproducibility }}</td>
+                        <td class="truncate" title="{{ resp.q9_bottleneck }}">{{ resp.q9_bottleneck }}</td>
+                        <td>
+                            <form action="/admin/delete/manual/{{ resp.id }}" method="POST" onsubmit="return confirm('¿Seguro de borrar esta fila manual?');">
+                                <button type="submit" class="btn-delete">Borrar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="15" style="text-align: center; padding: 2rem;">No hay respuestas manuales registradas aún.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tab: AI -->
+        <div id="tab-ai" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                <a href="/admin/export/ai" class="btn-home" style="background: #27ae60; margin: 0; padding: 10px 20px;">Descargar CSV - IA</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th title="ID de Registro">ID</th>
+                        <th title="Fecha y Hora">Fecha</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th title="Tiempo invertido probando y validando las pantallas del sistema">Tiempo (min)</th>
+                        <th title="Reducción de esfuerzo en Deduplicación Automática">Q1: Éxito Deduplicación</th>
+                        <th title="Confianza en la Deduplicación Semántica frente a humana">Q2: Confianza Deduplicación</th>
+                        <th title="Reduccion de Fatiga visual/mental en Screening">Q3: Fatiga Screening</th>
+                        <th title="Reducción de miedo a descartar gracias a justificaciones de IA">Q4: Confianza Screening</th>
+                        <th title="Reducción radical de tiempo al utilizar Síntesis Automática LLM">Q5: Tiempo Síntesis</th>
+                        <th title="El sistema garantiza la Reproducibilidad en el cruce manual">Q6: Reproducibilidad</th>
+                        <th title="Impacto del sistema para viabilizar revisión en pregrado">Q7: Viabilidad</th>
+                        <th title="Cualitativo sobre la funcionalidad que más redujo tiempo">Q8: Mayor Impacto</th>
+                        <th title="Feedback riguroso de errores o alucinaciones del LLM">Q9: Alucinaciones</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resp in resp_ai %}
+                    <tr>
+                        <td>{{ resp.id }}</td>
+                        <td>{{ resp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ resp.name }}</td>
+                        <td>{{ resp.email }}</td>
+                        <td>{{ resp.time_minutes }}</td>
+                        <td>{{ resp.q1_ai_dedup_effort }}</td>
+                        <td>{{ resp.q2_ai_dedup_trust }}</td>
+                        <td>{{ resp.q3_ai_screening_fatigue }}</td>
+                        <td>{{ resp.q4_ai_screening_trust }}</td>
+                        <td>{{ resp.q5_ai_synthesis_time }}</td>
+                        <td>{{ resp.q6_ai_reproducibility }}</td>
+                        <td>{{ resp.q7_ai_viability }}</td>
+                        <td class="truncate" title="{{ resp.q8_ai_best_feature }}">{{ resp.q8_ai_best_feature }}</td>
+                        <td class="truncate" title="{{ resp.q9_ai_hallucinations }}">{{ resp.q9_ai_hallucinations }}</td>
+                        <td>
+                            <form action="/admin/delete/ai/{{ resp.id }}" method="POST" onsubmit="return confirm('¿Seguro de borrar esta fila de IA?');">
+                                <button type="submit" class="btn-delete">Borrar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="15" style="text-align: center; padding: 2rem;">No hay respuestas de IA registradas aún.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <!-- Script para cambiar pestañas -->
+    <script>
+        function switchTab(tabId) {
+            // Ocultar contenidos
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Quitar clase activa de botones
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // Mostrar contenido deseado
+            document.getElementById('tab-' + tabId).classList.add('active');
+            // Activar boton correspondiente (identificado por su onclick argument)
+            event.currentTarget.classList.add('active');
+        }
+    </script>
 </body>
 </html>

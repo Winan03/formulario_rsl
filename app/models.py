@@ -27,3 +27,29 @@ class EvaluationResponse(Base):
     
     # Cualitativo
     q9_bottleneck = Column(Text, nullable=False)
+
+class AIEvaluationResponse(Base):
+    __tablename__ = "ai_evaluation_responses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    # Datos básicos
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False)
+    
+    # Tiempo
+    time_minutes = Column(Integer, nullable=False)
+    
+    # Likert (1-5)
+    q1_ai_dedup_effort = Column(Integer, nullable=False)
+    q2_ai_dedup_trust = Column(Integer, nullable=False)
+    q3_ai_screening_fatigue = Column(Integer, nullable=False)
+    q4_ai_screening_trust = Column(Integer, nullable=False)
+    q5_ai_synthesis_time = Column(Integer, nullable=False)
+    q6_ai_reproducibility = Column(Integer, nullable=False)
+    q7_ai_viability = Column(Integer, nullable=False)
+    
+    # Cualitativas
+    q8_ai_best_feature = Column(Text, nullable=False)
+    q9_ai_hallucinations = Column(Text, nullable=False)

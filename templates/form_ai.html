@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación PRISMA Asistida por IA</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <main class="container">
+        <a href="/" style="display: inline-block; margin-bottom: 1rem; color: var(--primary-color); text-decoration: none; font-weight: 600;">← Volver al Inicio</a>
+        
+        <header class="form-header">
+            <h1 style="color: #27ae60;">Guía de Entrevista de Validación</h1>
+            <h2>(Post-Prueba Sistema con IA)</h2>
+            <p class="description">
+                <strong>Objetivo:</strong> Evaluar la eficiencia operativa, la reducción de carga de trabajo y la usabilidad del sistema web automatizado con IA en el proceso de revisión sistemática PRISMA.
+            </p>
+            <p class="instructions">
+                <strong>Instrucciones:</strong> Por favor, lea cada afirmación relacionada con la tarea que acabas de finalizar utilizando la plataforma web. Selecciona la opción que mejor represente tu experiencia, utilizando la escala del 1 (El sistema falló en esto) al 5 (El sistema fue excelente en esto).
+            </p>
+        </header>
+
+        <form action="/submit/ai" method="POST" class="prisma-form">
+            
+            <section class="form-section">
+                <h3>Datos del Participante</h3>
+                <div class="form-group row">
+                    <div class="input-field">
+                        <label for="name">Nombre completo</label>
+                        <input type="text" id="name" name="name" required placeholder="Ej. Juan Pérez">
+                    </div>
+                    <div class="input-field">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" required placeholder="usuario@correo.com">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h3>SECCIÓN I: REGISTRO DE TIEMPO (Uso exclusivo del investigador)</h3>
+                <div class="form-group">
+                    <label for="time_minutes">Tiempo total invertido en validar los resultados en el sistema (minutos):</label>
+                    <input type="number" id="time_minutes" name="time_minutes" min="0" placeholder="0 (Obligatorio llenado por investigador)">
+                </div>
+                <p style="font-size: 0.85rem; color: #7f8c8d; margin-top: -10px;">* El investigador ingresará aquí la medición del tiempo (espera de procesamiento IA + tiempo de validación) tomada durante el ejercicio antes de enviar la encuesta.</p>
+            </section>
+
+            <section class="form-section">
+                <h3>SECCIÓN II: ESCALA DE OPTIMIZACIÓN Y USABILIDAD</h3>
+                <p class="scale-info">Escala Likert: (1 = Totalmente en desacuerdo / No me ayudó, 5 = Totalmente de acuerdo / Me ayudó muchísimo).</p>
+                
+                <h4>Fase 1 y 2: Búsqueda Federada y Deduplicación</h4>
+                <div class="likert-group">
+                    <label>1. La búsqueda automatizada y la eliminación de duplicados por el sistema (sin tener que descargar ni cruzar archivos en Excel) me ahorró un esfuerzo mecánico significativo.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q1_ai_dedup_effort" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q1_ai_dedup_effort" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q1_ai_dedup_effort" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q1_ai_dedup_effort" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q1_ai_dedup_effort" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <div class="likert-group">
+                    <label>2. Confío en que el algoritmo de deduplicación semántica del sistema es más preciso y seguro que mi revisión visual en una hoja de cálculo.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q2_ai_dedup_trust" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q2_ai_dedup_trust" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q2_ai_dedup_trust" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q2_ai_dedup_trust" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q2_ai_dedup_trust" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <h4>Fase 3: Screening (Cribado Asistido)</h4>
+                <div class="likert-group">
+                    <label>3. Revisar la lista de artículos ya priorizada y pre-clasificada por la Inteligencia Artificial redujo drásticamente mi fatiga visual y mental.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q3_ai_screening_fatigue" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q3_ai_screening_fatigue" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q3_ai_screening_fatigue" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q3_ai_screening_fatigue" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q3_ai_screening_fatigue" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <div class="likert-group">
+                    <label>4. Las justificaciones generadas por la IA me dieron seguridad para aceptar o rechazar un artículo rápidamente, eliminando el "miedo a descartar" información importante.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q4_ai_screening_trust" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q4_ai_screening_trust" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q4_ai_screening_trust" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q4_ai_screening_trust" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q4_ai_screening_trust" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <h4>Fase 4: Síntesis Automática (Extracción de Datos)</h4>
+                <div class="likert-group">
+                    <label>5. La matriz de extracción generada automáticamente por el modelo LLM (con Población, Metodología y Resultados) es coherente y redujo el tiempo de redacción manual a casi cero.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q5_ai_synthesis_time" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q5_ai_synthesis_time" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q5_ai_synthesis_time" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q5_ai_synthesis_time" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q5_ai_synthesis_time" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <h4>Fase Transversal: Reproducibilidad y Viabilidad</h4>
+                <div class="likert-group">
+                    <label>6. Si otro investigador introduce la misma consulta (query) en este sistema mañana, considero que el sistema garantiza la reproducibilidad metodológica del proceso.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q6_ai_reproducibility" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q6_ai_reproducibility" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q6_ai_reproducibility" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q6_ai_reproducibility" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q6_ai_reproducibility" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <div class="likert-group">
+                    <label>7. Considero que el uso de esta plataforma hace que realizar una Revisión Sistemática a gran escala sea un proceso viable, ágil y sostenible para un estudiante de pregrado.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q7_ai_viability" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q7_ai_viability" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q7_ai_viability" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q7_ai_viability" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q7_ai_viability" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="form-section">
+                <h3>SECCIÓN III: INDAGACIÓN CUALITATIVA (Feedback del Sistema)</h3>
+                <div class="form-group">
+                    <label for="q8_ai_best_feature">8. De las funcionalidades que probaste (Búsqueda federada, Cribado asistido, Síntesis LLM), ¿cuál consideras que genera el mayor impacto en la reducción de tu tiempo y por qué?</label>
+                    <textarea id="q8_ai_best_feature" name="q8_ai_best_feature" rows="4" required placeholder="Escribe tu respuesta aquí..."></textarea>
+                </div>
+                
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label for="q9_ai_hallucinations">9. ¿Notaste algún error, "alucinación" o aspecto de mejora en las respuestas generadas por la Inteligencia Artificial? (Ayuda al rigor de la investigación).</label>
+                    <textarea id="q9_ai_hallucinations" name="q9_ai_hallucinations" rows="4" required placeholder="Escribe tu respuesta aquí..."></textarea>
+                </div>
+            </section>
+
+            <div class="submit-container">
+                <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #27ae60, #2ecc71); box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);">Enviar Respuestas IA</button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

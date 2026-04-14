@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selección de Evaluación PRISMA</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .home-container {
+            max-width: 900px;
+            margin: 5rem auto;
+            text-align: center;
+        }
+        .cards {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            flex: 1;
+            min-width: 300px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.2);
+        }
+        .card h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        .card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="home-container">
+        <div class="form-header" style="background: rgba(255,255,255,0.8); padding: 2rem; border-radius: 20px; backdrop-filter: blur(10px);">
+            <h1 style="margin: 0; font-size: 2.5rem;">Evaluación de Metodología PRISMA</h1>
+            <p style="margin-top: 10px; font-size: 1.1rem; color: #555;">Seleccione la fase de validación que se acaba de completar</p>
+        </div>
+
+        <div class="cards">
+            <a href="/form/manual" class="card">
+                <div class="card-icon">📄</div>
+                <h2>Prueba Manual</h2>
+                <p>Evalúa el nivel de esfuerzo, eficiencia y puntos de dolor al realizar la revisión sistemática de forma totalmente manual en hojas de cálculo.</p>
+                <div class="btn-submit" style="width: 100%; box-sizing: border-box;">Iniciar Encuesta Manual</div>
+            </a>
+            
+            <a href="/form/ai" class="card">
+                <div class="card-icon">🤖</div>
+                <h2>Plataforma IA</h2>
+                <p>Evalúa el impacto, reducción de carga y usabilidad del nuevo sistema de búsqueda federada, cribado y extracción automatizada por LLMs.</p>
+                <div class="btn-submit" style="width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #27ae60, #2ecc71);">Iniciar Encuesta con IA</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

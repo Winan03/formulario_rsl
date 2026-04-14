@@ -28,15 +28,14 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 TARGET_EMAIL = os.getenv("TARGET_EMAIL")
 
 if not ADMIN_USER or not ADMIN_PASSWORD:
-    raise RuntimeError("CREDENTIAL ERROR: ADMIN_USER o ADMIN_PASSWORD no están configurados en el .env")
+    print("WARNING: ADMIN_USER o ADMIN_PASSWORD no configurados.")
 if not TARGET_EMAIL:
-    raise RuntimeError("EMAIL ERROR: TARGET_EMAIL no está configurado en el .env")
-
+    print("WARNING: TARGET_EMAIL no configurado.")
 
 # Init DB
 models.Base.metadata.create_all(bind=database.engine)
 
-app = FastAPI(title="Evaluación PRISMA", version="1.0.0")
+app = FastAPI(title="Evaluación PRISMA", version="1.1.0")
 security = HTTPBasic()
 
 # Mount static and templates
@@ -53,6 +52,8 @@ def get_db():
 
 # Auth Dependency
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    if not ADMIN_USER or not ADMIN_PASSWORD:
+        raise HTTPException(status_code=500, detail="Credenciales de admin no configuradas en servidor")
     correct_username = secrets.compare_digest(credentials.username, ADMIN_USER)
     correct_password = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
     if not (correct_username and correct_password):
@@ -63,9 +64,9 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
         )
     return credentials.username
 
-# Email Task
-def send_notification_email(response_id: int, name: str, email: str, response_data: dict):
-    if not SMTP_USERNAME or not SMTP_PASSWORD:
+# Email Task (Manual)
+def send_notification_email_manual(response_id: int, name: str, email: str, response_data: dict):
+    if not SMTP_USERNAME or not SMTP_PASSWORD or not TARGET_EMAIL:
         print("Atención: Credenciales SMTP no configuradas. Correo no enviado.")
         return
 
@@ -73,19 +74,19 @@ def send_notification_email(response_id: int, name: str, email: str, response_da
         msg = MIMEMultipart()
         msg["From"] = SMTP_USERNAME
         msg["To"] = TARGET_EMAIL
-        msg["Subject"] = f"Nueva Evaluación PRISMA de: {name}"
+        msg["Subject"] = f"Nueva Evaluación PRISMA MANUAL de: {name}"
 
         body = f"""
         <html>
           <body>
-            <h2>Nueva respuesta en el formulario de Evaluación PRISMA</h2>
+            <h2>Nueva respuesta - Evaluación MANUAL</h2>
             <p><strong>ID:</strong> {response_id}</p>
             <p><strong>Nombre:</strong> {name}</p>
             <p><strong>Correo del participante:</strong> {email}</p>
+            <p><strong>Tiempo (minutos):</strong> {response_data.get('time_minutes')}</p>
             <hr>
-            <h3>Detalles de la encuesta:</h3>
+            <h3>Calificaciones (1 a 5):</h3>
             <ul>
-              <li><strong>Tiempo (minutos):</strong> {response_data.get('time_minutes')}</li>
               <li><strong>q1_filters:</strong> {response_data.get('q1_filters')}</li>
               <li><strong>q2_export:</strong> {response_data.get('q2_export')}</li>
               <li><strong>q3_dedup_visual:</strong> {response_data.get('q3_dedup_visual')}</li>
@@ -95,7 +96,7 @@ def send_notification_email(response_id: int, name: str, email: str, response_da
               <li><strong>q7_synthesis_slow:</strong> {response_data.get('q7_synthesis_slow')}</li>
               <li><strong>q8_reproducibility:</strong> {response_data.get('q8_reproducibility')}</li>
             </ul>
-            <p><strong>Comentario Cualitativo:</strong></p>
+            <p><strong>Cuello de botella:</strong></p>
             <p>"{response_data.get('q9_bottleneck')}"</p>
           </body>
         </html>
@@ -107,21 +108,80 @@ def send_notification_email(response_id: int, name: str, email: str, response_da
         server.login(SMTP_USERNAME, SMTP_PASSWORD)
         server.send_message(msg)
         server.quit()
-        print(f"Correo de notificación enviado exitosamente a {TARGET_EMAIL}")
+        print(f"Correo enviado exitosamente a {TARGET_EMAIL}")
     except Exception as e:
         print(f"Error enviando correo: {e}")
 
+# Email Task (AI)
+def send_notification_email_ai(response_id: int, name: str, email: str, response_data: dict):
+    if not SMTP_USERNAME or not SMTP_PASSWORD or not TARGET_EMAIL:
+        print("Atención: Credenciales SMTP no configuradas. Correo no enviado.")
+        return
+
+    try:
+        msg = MIMEMultipart()
+        msg["From"] = SMTP_USERNAME
+        msg["To"] = TARGET_EMAIL
+        msg["Subject"] = f"Nueva Evaluación PRISMA IA de: {name}"
+
+        body = f"""
+        <html>
+          <body>
+            <h2>Nueva respuesta - Evaluación SISTEMA IA</h2>
+            <p><strong>ID:</strong> {response_id}</p>
+            <p><strong>Nombre:</strong> {name}</p>
+            <p><strong>Correo del participante:</strong> {email}</p>
+            <p><strong>Tiempo (minutos):</strong> {response_data.get('time_minutes')}</p>
+            <hr>
+            <h3>Calificaciones (1 a 5):</h3>
+            <ul>
+              <li><strong>1. Esfuerzo Deduplicación:</strong> {response_data.get('q1_ai_dedup_effort')}</li>
+              <li><strong>2. Confianza Deduplicación:</strong> {response_data.get('q2_ai_dedup_trust')}</li>
+              <li><strong>3. Fatiga Screening:</strong> {response_data.get('q3_ai_screening_fatigue')}</li>
+              <li><strong>4. Confianza Screening (Miedo descarte):</strong> {response_data.get('q4_ai_screening_trust')}</li>
+              <li><strong>5. Tiempo Síntesis automatizada:</strong> {response_data.get('q5_ai_synthesis_time')}</li>
+              <li><strong>6. Reproducibilidad metodológica:</strong> {response_data.get('q6_ai_reproducibility')}</li>
+              <li><strong>7. Viabilidad plataforma:</strong> {response_data.get('q7_ai_viability')}</li>
+            </ul>
+            <p><strong>Cualitativa 1 (Mayor impacto):</strong></p>
+            <p>"{response_data.get('q8_ai_best_feature')}"</p>
+            <p><strong>Cualitativa 2 (Errores o alucinaciones):</strong></p>
+            <p>"{response_data.get('q9_ai_hallucinations')}"</p>
+          </body>
+        </html>
+        """
+        msg.attach(MIMEText(body, "html"))
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        print(f"Correo AI enviado exitosamente a {TARGET_EMAIL}")
+    except Exception as e:
+        print(f"Error enviando correo: {e}")
+
+# Routes HTML
 @app.get("/", response_class=HTMLResponse)
-async def read_form(request: Request):
+async def read_home(request: Request):
+    return templates.TemplateResponse(request=request, name="home.html")
+
+@app.get("/form/manual", response_class=HTMLResponse)
+async def read_form_manual(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")
 
-@app.post("/submit", response_class=HTMLResponse)
-async def submit_form(
+@app.get("/form/ai", response_class=HTMLResponse)
+async def read_form_ai(request: Request):
+    return templates.TemplateResponse(request=request, name="form_ai.html")
+
+# Submit Routes
+@app.post("/submit/manual", response_class=HTMLResponse)
+async def submit_form_manual(
     request: Request,
     background_tasks: BackgroundTasks,
     name: str = Form(...),
     email: str = Form(...),
-    time_minutes: int = Form(...),
+    time_minutes: int = Form(0),
     q1_filters: int = Form(...),
     q2_export: int = Form(...),
     q3_dedup_visual: int = Form(...),
@@ -133,55 +193,73 @@ async def submit_form(
     q9_bottleneck: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    # Crear response en BD
     new_response = models.EvaluationResponse(
-        name=name,
-        email=email,
-        time_minutes=time_minutes,
-        q1_filters=q1_filters,
-        q2_export=q2_export,
-        q3_dedup_visual=q3_dedup_visual,
-        q4_dedup_error=q4_dedup_error,
-        q5_screen_fatigue=q5_screen_fatigue,
-        q6_screen_fear=q6_screen_fear,
-        q7_synthesis_slow=q7_synthesis_slow,
-        q8_reproducibility=q8_reproducibility,
-        q9_bottleneck=q9_bottleneck
+        name=name, email=email, time_minutes=time_minutes,
+        q1_filters=q1_filters, q2_export=q2_export, q3_dedup_visual=q3_dedup_visual,
+        q4_dedup_error=q4_dedup_error, q5_screen_fatigue=q5_screen_fatigue,
+        q6_screen_fear=q6_screen_fear, q7_synthesis_slow=q7_synthesis_slow,
+        q8_reproducibility=q8_reproducibility, q9_bottleneck=q9_bottleneck
     )
     db.add(new_response)
     db.commit()
     db.refresh(new_response)
 
-    # Dictionary for email
-    response_data = {
-        "time_minutes": time_minutes,
-        "q1_filters": q1_filters,
-        "q2_export": q2_export,
-        "q3_dedup_visual": q3_dedup_visual,
-        "q4_dedup_error": q4_dedup_error,
-        "q5_screen_fatigue": q5_screen_fatigue,
-        "q6_screen_fear": q6_screen_fear,
-        "q7_synthesis_slow": q7_synthesis_slow,
-        "q8_reproducibility": q8_reproducibility,
-        "q9_bottleneck": q9_bottleneck
-    }
-
-    # Enviar correo en background
-    background_tasks.add_task(send_notification_email, new_response.id, name, email, response_data)
-
+    response_data = {"time_minutes": time_minutes, "q1_filters": q1_filters, "q2_export": q2_export, "q3_dedup_visual": q3_dedup_visual, "q4_dedup_error": q4_dedup_error, "q5_screen_fatigue": q5_screen_fatigue, "q6_screen_fear": q6_screen_fear, "q7_synthesis_slow": q7_synthesis_slow, "q8_reproducibility": q8_reproducibility, "q9_bottleneck": q9_bottleneck}
+    background_tasks.add_task(send_notification_email_manual, new_response.id, name, email, response_data)
     return templates.TemplateResponse(request=request, name="success.html", context={"name": name})
 
+@app.post("/submit/ai", response_class=HTMLResponse)
+async def submit_form_ai(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    name: str = Form(...),
+    email: str = Form(...),
+    time_minutes: int = Form(0),
+    q1_ai_dedup_effort: int = Form(...),
+    q2_ai_dedup_trust: int = Form(...),
+    q3_ai_screening_fatigue: int = Form(...),
+    q4_ai_screening_trust: int = Form(...),
+    q5_ai_synthesis_time: int = Form(...),
+    q6_ai_reproducibility: int = Form(...),
+    q7_ai_viability: int = Form(...),
+    q8_ai_best_feature: str = Form(...),
+    q9_ai_hallucinations: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    new_response = models.AIEvaluationResponse(
+        name=name, email=email, time_minutes=time_minutes,
+        q1_ai_dedup_effort=q1_ai_dedup_effort, q2_ai_dedup_trust=q2_ai_dedup_trust,
+        q3_ai_screening_fatigue=q3_ai_screening_fatigue, q4_ai_screening_trust=q4_ai_screening_trust,
+        q5_ai_synthesis_time=q5_ai_synthesis_time, q6_ai_reproducibility=q6_ai_reproducibility,
+        q7_ai_viability=q7_ai_viability, q8_ai_best_feature=q8_ai_best_feature,
+        q9_ai_hallucinations=q9_ai_hallucinations
+    )
+    db.add(new_response)
+    db.commit()
+    db.refresh(new_response)
+
+    response_data = {
+        "time_minutes": time_minutes, "q1_ai_dedup_effort": q1_ai_dedup_effort, "q2_ai_dedup_trust": q2_ai_dedup_trust, 
+        "q3_ai_screening_fatigue": q3_ai_screening_fatigue, "q4_ai_screening_trust": q4_ai_screening_trust, 
+        "q5_ai_synthesis_time": q5_ai_synthesis_time, "q6_ai_reproducibility": q6_ai_reproducibility, 
+        "q7_ai_viability": q7_ai_viability, "q8_ai_best_feature": q8_ai_best_feature, "q9_ai_hallucinations": q9_ai_hallucinations
+    }
+    background_tasks.add_task(send_notification_email_ai, new_response.id, name, email, response_data)
+    return templates.TemplateResponse(request=request, name="success.html", context={"name": name})
+
+# Admin Routes
 @app.get("/admin", response_class=HTMLResponse)
 async def view_admin(
     request: Request, 
     username: str = Depends(get_current_username),
     db: Session = Depends(get_db)
 ):
-    responses = db.query(models.EvaluationResponse).order_by(models.EvaluationResponse.id.desc()).all()
-    return templates.TemplateResponse(request=request, name="admin.html", context={"responses": responses})
+    resp_manual = db.query(models.EvaluationResponse).order_by(models.EvaluationResponse.id.desc()).all()
+    resp_ai = db.query(models.AIEvaluationResponse).order_by(models.AIEvaluationResponse.id.desc()).all()
+    return templates.TemplateResponse(request=request, name="admin.html", context={"resp_manual": resp_manual, "resp_ai": resp_ai})
 
-@app.post("/admin/delete/{response_id}")
-async def delete_response(
+@app.post("/admin/delete/manual/{response_id}")
+async def delete_response_manual(
     response_id: int,
     username: str = Depends(get_current_username),
     db: Session = Depends(get_db)
@@ -192,55 +270,44 @@ async def delete_response(
         db.commit()
     return RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
 
-@app.get("/admin/export")
-async def export_csv(
+@app.post("/admin/delete/ai/{response_id}")
+async def delete_response_ai(
+    response_id: int,
+    username: str = Depends(get_current_username),
+    db: Session = Depends(get_db)
+):
+    resp = db.query(models.AIEvaluationResponse).filter(models.AIEvaluationResponse.id == response_id).first()
+    if resp:
+        db.delete(resp)
+        db.commit()
+    return RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
+
+@app.get("/admin/export/manual")
+async def export_csv_manual(
     username: str = Depends(get_current_username),
     db: Session = Depends(get_db)
 ):
     responses = db.query(models.EvaluationResponse).order_by(models.EvaluationResponse.id.asc()).all()
-    
     output = io.StringIO()
-    # Usar dialecto excel y utf-8-sig (para tildes en excel)
-    # Fastapi encodea a utf-8 por defecto, así que devolvemos string pero con encode byte utf-8 con BOM
     writer = csv.writer(output, delimiter=';')
-    
-    writer.writerow([
-        "ID", "Fecha", "Nombre", "Correo", "Tiempo (minutos)", 
-        "Q1: Busqueda y Filtros", 
-        "Q2: Exportar y Consolidar", 
-        "Q3: Deduplicacion Visual", 
-        "Q4: Inseguridad Excel", 
-        "Q5: Fatiga de Screening", 
-        "Q6: Miedo de Descartar", 
-        "Q7: Síntesis y Matriz", 
-        "Q8: Reproducibilidad", 
-        "Q9: Cuello de Botella (Opinión)"
-    ])
-    
-    for resp in responses:
-        writer.writerow([
-            resp.id, 
-            resp.created_at.strftime('%Y-%m-%d %H:%M'),
-            resp.name,
-            resp.email,
-            resp.time_minutes,
-            resp.q1_filters,
-            resp.q2_export,
-            resp.q3_dedup_visual,
-            resp.q4_dedup_error,
-            resp.q5_screen_fatigue,
-            resp.q6_screen_fear,
-            resp.q7_synthesis_slow,
-            resp.q8_reproducibility,
-            resp.q9_bottleneck
-        ])
-    
-    # BOM (Byte Order Mark) helps Excel open utf-8 automatically
+    writer.writerow(["ID", "Fecha", "Nombre", "Correo", "Tiempo (minutos)", "Q1: Busqueda y Filtros", "Q2: Exportar y Consolidar", "Q3: Deduplicacion Visual", "Q4: Inseguridad Excel", "Q5: Fatiga de Screening", "Q6: Miedo de Descartar", "Q7: Síntesis y Matriz", "Q8: Reproducibilidad", "Q9: Cuello de Botella"])
+    for r in responses:
+        writer.writerow([r.id, r.created_at.strftime('%Y-%m-%d %H:%M'), r.name, r.email, r.time_minutes, r.q1_filters, r.q2_export, r.q3_dedup_visual, r.q4_dedup_error, r.q5_screen_fatigue, r.q6_screen_fear, r.q7_synthesis_slow, r.q8_reproducibility, r.q9_bottleneck])
     csv_bytes = "\ufeff" + output.getvalue()
-    
-    headers = {
-        'Content-Disposition': 'attachment; filename="resultados_evaluacion_prisma.csv"'
-    }
-    
+    headers = {'Content-Disposition': 'attachment; filename="resultados_manual_prisma.csv"'}
     return Response(content=csv_bytes, media_type="text/csv; charset=utf-8", headers=headers)
 
+@app.get("/admin/export/ai")
+async def export_csv_ai(
+    username: str = Depends(get_current_username),
+    db: Session = Depends(get_db)
+):
+    responses = db.query(models.AIEvaluationResponse).order_by(models.AIEvaluationResponse.id.asc()).all()
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=';')
+    writer.writerow(["ID", "Fecha", "Nombre", "Correo", "Tiempo (minutos)", "Q1: Esfuerzo Deduplicacion", "Q2: Confianza Deduplicacion", "Q3: Fatiga Screening", "Q4: Confianza Screening", "Q5: Tiempo Sintesis", "Q6: Reproducibilidad", "Q7: Viabilidad", "Q8: Mayor Impacto", "Q9: Alucinaciones"])
+    for r in responses:
+        writer.writerow([r.id, r.created_at.strftime('%Y-%m-%d %H:%M'), r.name, r.email, r.time_minutes, r.q1_ai_dedup_effort, r.q2_ai_dedup_trust, r.q3_ai_screening_fatigue, r.q4_ai_screening_trust, r.q5_ai_synthesis_time, r.q6_ai_reproducibility, r.q7_ai_viability, r.q8_ai_best_feature, r.q9_ai_hallucinations])
+    csv_bytes = "\ufeff" + output.getvalue()
+    headers = {'Content-Disposition': 'attachment; filename="resultados_ia_prisma.csv"'}
+    return Response(content=csv_bytes, media_type="text/csv; charset=utf-8", headers=headers)
