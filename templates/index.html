@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación PRISMA Post-Prueba Manual</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <main class="container">
+        <header class="form-header">
+            <h1>Guía de Entrevista Diagnóstica</h1>
+            <h2>(Post-Prueba Manual PRISMA)</h2>
+            <p class="description">
+                <strong>Objetivo:</strong> Evaluar la eficiencia operativa, la carga de trabajo y la percepción de dificultad del investigador al realizar el ciclo completo de revisión sistemática PRISMA de forma manual.
+            </p>
+            <p class="instructions">
+                <strong>Instrucciones:</strong> Por favor, lea cada afirmación relacionada con la tarea que acabas de finalizar. Selecciona la opción que mejor represente tu experiencia, revisando cuidadosamente la escala desde "Totalmente en desacuerdo" hasta "Totalmente de acuerdo".
+            </p>
+        </header>
+
+        <form action="/submit" method="POST" class="prisma-form">
+            
+            <section class="form-section">
+                <h3>Datos del Participante</h3>
+                <div class="form-group row">
+                    <div class="input-field">
+                        <label for="name">Nombre completo</label>
+                        <input type="text" id="name" name="name" required placeholder="Ej. Juan Pérez">
+                    </div>
+                    <div class="input-field">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" required placeholder="usuario@correo.com">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h3>SECCIÓN I: REGISTRO DE TIEMPO (Solo uso del investigador)</h3>
+                <div class="form-group">
+                    <label for="time_minutes">Tiempo total invertido en completar todas las fases (minutos):</label>
+                    <input type="number" id="time_minutes" name="time_minutes" min="0" placeholder="0 (Obligatorio llenado por investigador)">
+                </div>
+                <p style="font-size: 0.85rem; color: #7f8c8d; margin-top: -10px;">* El investigador ingresará aquí la medición del tiempo tomada durante el ejercicio antes de enviar la encuesta.</p>
+            </section>
+
+            <section class="form-section">
+                <h3>SECCIÓN II: ESCALA DE DIFICULTAD Y FATIGA</h3>
+                <p class="scale-info">Escala Likert: Selecciona qué tanto estás de acuerdo con las siguientes afirmaciones (1 = Muy fácil / Sin problemas, 5 = Muy difícil / Muy tedioso).</p>
+                
+                <h4>Fase 1: Búsqueda y Filtros</h4>
+                <div class="likert-group">
+                    <label>1. Ajustar las palabras clave booleanas y aplicar los filtros manualmente en las bases de datos (ej. PubMed, Semantic Scholar) consumió más tiempo del esperado.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q1_filters" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q1_filters" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q1_filters" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q1_filters" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q1_filters" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <div class="likert-group">
+                    <label>2. Exportar los resultados y consolidarlos en un solo archivo Excel fue una tarea fragmentada y poco fluida.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q2_export" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q2_export" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q2_export" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q2_export" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q2_export" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <h4>Fase 2: Deduplicación</h4>
+                <div class="likert-group">
+                    <label>3. Identificar y eliminar artículos duplicados visualmente en la hoja de cálculo representó un esfuerzo mecánico agotador.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q3_dedup_visual" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q3_dedup_visual" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q3_dedup_visual" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q3_dedup_visual" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q3_dedup_visual" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <div class="likert-group">
+                    <label>4. Siento que el proceso manual en Excel es inseguro y propenso a errores (por ejemplo, no detectar duplicados porque tienen el título ligeramente distinto).</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q4_dedup_error" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q4_dedup_error" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q4_dedup_error" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q4_dedup_error" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q4_dedup_error" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <h4>Fase 3: Screening (Cribado de Títulos y Resúmenes)</h4>
+                <div class="likert-group">
+                    <label>5. Leer secuencialmente los resúmenes sin ningún orden de relevancia (solo en el orden que cayeron en el Excel) me causó un alto nivel de fatiga visual y mental.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q5_screen_fatigue" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q5_screen_fatigue" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q5_screen_fatigue" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q5_screen_fatigue" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q5_screen_fatigue" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <div class="likert-group">
+                    <label>6. Al avanzar en la lectura, sentí que mi capacidad de concentración disminuía, aumentando el miedo a descartar un artículo que sí era importante.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q6_screen_fear" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q6_screen_fear" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q6_screen_fear" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q6_screen_fear" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q6_screen_fear" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <h4>Fase 4: Síntesis (Extracción de Datos)</h4>
+                <div class="likert-group">
+                    <label>7. El proceso de abrir los artículos finales, buscar la información clave (ej. Población, Metodología, Resultados) y redactar la matriz de síntesis a mano fue la parte más lenta del proceso.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q7_synthesis_slow" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q7_synthesis_slow" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q7_synthesis_slow" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q7_synthesis_slow" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q7_synthesis_slow" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+                <h4>Fase Transversal: Reproducibilidad</h4>
+                <div class="likert-group">
+                    <label>8. Si tuvieras que repetir esta misma revisión mañana desde cero, considero que NO obtendría exactamente la misma lista final de artículos debido a la alta cantidad de decisiones subjetivas y cruces manuales.</label>
+                    <div class="likert-options">
+                        <label class="likert-item"><input type="radio" name="q8_reproducibility" value="1" required><span class="likert-text">1<br><small>Totalmente<br>en desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q8_reproducibility" value="2"><span class="likert-text">2<br><small>En<br>desacuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q8_reproducibility" value="3"><span class="likert-text">3<br><small><br>Neutral</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q8_reproducibility" value="4"><span class="likert-text">4<br><small>De<br>acuerdo</small></span></label>
+                        <label class="likert-item"><input type="radio" name="q8_reproducibility" value="5"><span class="likert-text">5<br><small>Totalmente<br>de acuerdo</small></span></label>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="form-section">
+                <h3>SECCIÓN III: INDAGACIÓN CUALITATIVA</h3>
+                <div class="form-group">
+                    <label for="q9_bottleneck">9. De las 4 fases de PRISMA que acabas de realizar a mano, ¿cuál consideras que es el principal "cuello de botella" y por qué?</label>
+                    <textarea id="q9_bottleneck" name="q9_bottleneck" rows="4" required placeholder="Escribe tu respuesta aquí..."></textarea>
+                </div>
+            </section>
+
+            <div class="submit-container">
+                <button type="submit" class="btn-submit">Enviar Respuestas</button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

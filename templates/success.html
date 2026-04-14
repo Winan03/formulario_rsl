@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Gracias!</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .success-box {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            max-width: 600px;
+            margin: 4rem auto;
+        }
+        .success-icon {
+            font-size: 4rem;
+            color: #27ae60;
+            margin-bottom: 1rem;
+        }
+        .btn-home {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        .btn-home:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <div class="success-box">
+        <div class="success-icon">✓</div>
+        <h2>¡Respuestas enviadas correctamente!</h2>
+        <p>Gracias, <strong>{{ name }}</strong>, por completar la Guía de Entrevista Diagnóstica PRISMA.</p>
+        <p>Tus respuestas han sido registradas y enviadas al investigador logrando los objetivos planteados.</p>
+        <a href="/" class="btn-home">Volver al inicio</a>
+    </div>
+</body>
+</html>

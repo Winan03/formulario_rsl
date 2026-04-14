@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Respuestas PRISMA</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f6f9;
+            color: #333;
+            font-weight: 600;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover {
+            background-color: #f9fafc;
+        }
+
+        .btn-delete {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #ff6b81;
+        }
+
+        .truncate {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <div class="admin-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+                <h2 style="margin: 0;">Panel de Administrador - Resultados</h2>
+                <p style="margin: 5px 0 0 0; color: #666;">Vista tabular de las respuestas registradas.</p>
+            </div>
+            <a href="/admin/export" class="btn-home" style="background: #27ae60; margin: 0; padding: 10px 20px;">Exportar a CSV</a>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th title="ID de Registro">ID</th>
+                    <th title="Fecha y Hora">Fecha</th>
+                    <th title="Nombre del participante">Nombre</th>
+                    <th title="Correo electrónico">Correo</th>
+                    <th title="Tiempo invertido en minutos">Tiempo (min)</th>
+                    <th title="Ajustar palabras clave y aplicar filtros">Q1: Búsqueda y Filtros</th>
+                    <th title="Exportar y consolidar en Excel">Q2: Exportar y Consolidar</th>
+                    <th title="Eliminar duplicados visualmente">Q3: Duplicados Visual</th>
+                    <th title="Percepción de inseguridad y errores en Excel">Q4: Inseguridad Excel</th>
+                    <th title="Fatiga visual al leer resúmenes">Q5: Fatiga Screening</th>
+                    <th title="Miedo a descartar e impacto en concentración">Q6: Miedo al Descarte</th>
+                    <th title="Lectura y tipeo manual de la matriz">Q7: Síntesis y Matriz</th>
+                    <th title="Miedo a la falta de reproducibilidad">Q8: Reproducibilidad</th>
+                    <th title="Pregunta cualitativa abierta">Q9: Cuello de Botella</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resp in responses %}
+                <tr>
+                    <td>{{ resp.id }}</td>
+                    <td>{{ resp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ resp.name }}</td>
+                    <td>{{ resp.email }}</td>
+                    <td>{{ resp.time_minutes }}</td>
+                    <td>{{ resp.q1_filters }}</td>
+                    <td>{{ resp.q2_export }}</td>
+                    <td>{{ resp.q3_dedup_visual }}</td>
+                    <td>{{ resp.q4_dedup_error }}</td>
+                    <td>{{ resp.q5_screen_fatigue }}</td>
+                    <td>{{ resp.q6_screen_fear }}</td>
+                    <td>{{ resp.q7_synthesis_slow }}</td>
+                    <td>{{ resp.q8_reproducibility }}</td>
+                    <td class="truncate" title="{{ resp.q9_bottleneck }}">{{ resp.q9_bottleneck }}</td>
+                    <td>
+                        <form action="/admin/delete/{{ resp.id }}" method="POST" onsubmit="return confirm('¿Seguro de borrar esta fila?');">
+                            <button type="submit" class="btn-delete">Borrar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="15" style="text-align: center; padding: 2rem;">No hay respuestas aún.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
