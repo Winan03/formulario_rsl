@@ -311,6 +311,22 @@ async def edit_time_ai(
         db.commit()
     return RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
 
+from sqlalchemy import text
+@app.get("/admin/migrate-db")
+async def migrate_db(username: str = Depends(get_current_username), db: Session = Depends(get_db)):
+    try:
+        from .database import engine
+        if engine.dialect.name == "postgresql":
+            db.execute(text("ALTER TABLE evaluation_responses ALTER COLUMN time_minutes TYPE DOUBLE PRECISION;"))
+            db.execute(text("ALTER TABLE ai_evaluation_responses ALTER COLUMN time_minutes TYPE DOUBLE PRECISION;"))
+            db.commit()
+            return {"status": "Exito: La base de datos (Postgres) fue migrada a decimales correctamente."}
+        else:
+            return {"status": f"No se requieren cambios en {engine.dialect.name}. Intente borrar la bd sqlite y reiniciar si esta en local."}
+    except Exception as e:
+        db.rollback()
+        return {"status": "Error", "detalle": str(e)}
+
 @app.get("/admin/export/manual")
 async def export_csv_manual(
     username: str = Depends(get_current_username),
