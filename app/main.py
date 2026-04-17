@@ -293,9 +293,17 @@ async def edit_time_manual(
     db: Session = Depends(get_db)
 ):
     resp = db.query(models.EvaluationResponse).filter(models.EvaluationResponse.id == response_id).first()
-    if resp:
+    if not resp:
+        raise HTTPException(status_code=404, detail=f"Respuesta manual con ID {response_id} no encontrada.")
+    try:
         resp.time_minutes = time_minutes
         db.commit()
+        db.refresh(resp)
+        print(f"[EDIT OK] Manual ID={response_id} -> time_minutes={time_minutes}")
+    except Exception as e:
+        db.rollback()
+        print(f"[EDIT ERROR] Manual ID={response_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al guardar: {e}")
     return RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
 
 @app.post("/admin/edit/ai/{response_id}")
@@ -306,9 +314,17 @@ async def edit_time_ai(
     db: Session = Depends(get_db)
 ):
     resp = db.query(models.AIEvaluationResponse).filter(models.AIEvaluationResponse.id == response_id).first()
-    if resp:
+    if not resp:
+        raise HTTPException(status_code=404, detail=f"Respuesta IA con ID {response_id} no encontrada.")
+    try:
         resp.time_minutes = time_minutes
         db.commit()
+        db.refresh(resp)
+        print(f"[EDIT OK] AI ID={response_id} -> time_minutes={time_minutes}")
+    except Exception as e:
+        db.rollback()
+        print(f"[EDIT ERROR] AI ID={response_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al guardar: {e}")
     return RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
 
 from sqlalchemy import text
