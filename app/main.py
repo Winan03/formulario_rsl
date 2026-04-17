@@ -184,7 +184,7 @@ async def submit_form_manual(
     background_tasks: BackgroundTasks,
     name: str = Form(...),
     email: str = Form(...),
-    time_minutes: int = Form(0),
+    time_minutes: float = Form(0.0),
     q1_filters: int = Form(...),
     q2_export: int = Form(...),
     q3_dedup_visual: int = Form(...),
@@ -217,7 +217,7 @@ async def submit_form_ai(
     background_tasks: BackgroundTasks,
     name: str = Form(...),
     email: str = Form(...),
-    time_minutes: int = Form(0),
+    time_minutes: float = Form(0.0),
     q1_ai_dedup_effort: int = Form(...),
     q2_ai_dedup_trust: int = Form(...),
     q3_ai_screening_fatigue: int = Form(...),
@@ -282,6 +282,32 @@ async def delete_response_ai(
     resp = db.query(models.AIEvaluationResponse).filter(models.AIEvaluationResponse.id == response_id).first()
     if resp:
         db.delete(resp)
+        db.commit()
+    return RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
+
+@app.post("/admin/edit/manual/{response_id}")
+async def edit_time_manual(
+    response_id: int,
+    time_minutes: float = Form(...),
+    username: str = Depends(get_current_username),
+    db: Session = Depends(get_db)
+):
+    resp = db.query(models.EvaluationResponse).filter(models.EvaluationResponse.id == response_id).first()
+    if resp:
+        resp.time_minutes = time_minutes
+        db.commit()
+    return RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
+
+@app.post("/admin/edit/ai/{response_id}")
+async def edit_time_ai(
+    response_id: int,
+    time_minutes: float = Form(...),
+    username: str = Depends(get_current_username),
+    db: Session = Depends(get_db)
+):
+    resp = db.query(models.AIEvaluationResponse).filter(models.AIEvaluationResponse.id == response_id).first()
+    if resp:
+        resp.time_minutes = time_minutes
         db.commit()
     return RedirectResponse(url="/admin", status_code=status.HTTP_302_FOUND)
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy import Column, Integer, String, Text, DateTime, Float
 import datetime
 from .database import Base
 
@@ -13,7 +13,7 @@ class EvaluationResponse(Base):
     email = Column(String(100), nullable=False)
     
     # Tiempo
-    time_minutes = Column(Integer, nullable=False)
+    time_minutes = Column(Float, nullable=False)
     
     # Likert (1-5)
     q1_filters = Column(Integer, nullable=False)
@@ -39,7 +39,7 @@ class AIEvaluationResponse(Base):
     email = Column(String(100), nullable=False)
     
     # Tiempo
-    time_minutes = Column(Integer, nullable=False)
+    time_minutes = Column(Float, nullable=False)
     
     # Likert (1-5)
     q1_ai_dedup_effort = Column(Integer, nullable=False)

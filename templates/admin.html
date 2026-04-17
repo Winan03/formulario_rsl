@@ -154,7 +154,12 @@
                         <td>{{ resp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td>{{ resp.name }}</td>
                         <td>{{ resp.email }}</td>
-                        <td>{{ resp.time_minutes }}</td>
+                        <td>
+                            <form action="/admin/edit/manual/{{ resp.id }}" method="POST" style="display: flex; gap: 5px; align-items: center; margin: 0;">
+                                <input type="number" step="0.01" name="time_minutes" value="{{ resp.time_minutes }}" style="width: 70px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                                <button type="submit" title="Guardar cambios" style="background: #3498db; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Modificar</button>
+                            </form>
+                        </td>
                         <td>{{ resp.q1_filters }}</td>
                         <td>{{ resp.q2_export }}</td>
                         <td>{{ resp.q3_dedup_visual }}</td>
@@ -211,7 +216,12 @@
                         <td>{{ resp.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td>{{ resp.name }}</td>
                         <td>{{ resp.email }}</td>
-                        <td>{{ resp.time_minutes }}</td>
+                        <td>
+                            <form action="/admin/edit/ai/{{ resp.id }}" method="POST" style="display: flex; gap: 5px; align-items: center; margin: 0;">
+                                <input type="number" step="0.01" name="time_minutes" value="{{ resp.time_minutes }}" style="width: 70px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                                <button type="submit" title="Guardar cambios" style="background: #3498db; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Modificar</button>
+                            </form>
+                        </td>
                         <td>{{ resp.q1_ai_dedup_effort }}</td>
                         <td>{{ resp.q2_ai_dedup_trust }}</td>
                         <td>{{ resp.q3_ai_screening_fatigue }}</td>
