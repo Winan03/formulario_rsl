@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Detalle — Manual #{{ resp.id }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ─── Admin banner ─── */
+        .admin-banner {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, #8e44ad, #6c3483);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 3px 15px rgba(142, 68, 173, 0.4);
+            font-family: 'Inter', sans-serif;
+        }
+        .admin-banner .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .banner-badge {
+            background: rgba(255,255,255,0.25);
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .banner-info {
+            font-size: 0.95rem;
+            opacity: 0.92;
+        }
+        .banner-info strong {
+            color: #f0e6ff;
+        }
+        .btn-back {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: background 0.2s;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.35); }
+
+        /* ─── Read-only overlay on all inputs ─── */
+        .prisma-form input,
+        .prisma-form textarea {
+            pointer-events: none;
+            user-select: none;
+            background: #f7f7f7 !important;
+            color: #555 !important;
+            cursor: default;
+        }
+
+        /* Likert — highlight selected */
+        .likert-item input[type="radio"] {
+            display: none;
+        }
+        .likert-item .likert-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: default;
+            transition: none;
+            min-width: 64px;
+            text-align: center;
+            color: #aaa;
+        }
+        .likert-item.selected .likert-text {
+            border-color: #8e44ad;
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: #fff !important;
+            box-shadow: 0 4px 14px rgba(142, 68, 173, 0.35);
+            transform: scale(1.08);
+        }
+        .likert-item.selected .likert-text small {
+            color: #fff !important;
+            opacity: 0.95;
+        }
+        .likert-item small {
+            font-size: 0.68rem;
+            font-weight: 400;
+            margin-top: 4px;
+            line-height: 1.2;
+        }
+
+        .readonly-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f3e8ff;
+            border-left: 4px solid #8e44ad;
+            padding: 10px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #6c3483;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .time-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #f3e8ff;
+            border: 2px solid #8e44ad;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6c3483;
+        }
+        .time-display small {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #999;
+        }
+
+        .textarea-readonly {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #c39bd3;
+            border-radius: 10px;
+            background: #f9f3ff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.6;
+            resize: none;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Banner -->
+    <div class="admin-banner">
+        <div class="banner-left">
+            <span class="banner-badge">👁 Modo Admin</span>
+            <span class="banner-info">
+                Formulario respondido por <strong>{{ resp.name }}</strong>
+                &nbsp;·&nbsp; ID #{{ resp.id }}
+                &nbsp;·&nbsp; {{ resp.created_at.strftime('%d/%m/%Y %H:%M') }}
+            </span>
+        </div>
+        <a href="/admin" class="btn-back">← Volver al Panel</a>
+    </div>
+
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <main class="container">
+
+        <header class="form-header">
+            <h1>Guía de Entrevista Diagnóstica</h1>
+            <h2>(Post-Prueba Manual PRISMA)</h2>
+            <p class="description">
+                <strong>Objetivo:</strong> Evaluar la eficiencia operativa, la carga de trabajo y la percepción de dificultad del investigador al realizar el ciclo completo de revisión sistemática PRISMA de forma manual.
+            </p>
+            <p class="instructions">
+                <strong>Instrucciones:</strong> Por favor, lea cada afirmación relacionada con la tarea que acabas de finalizar. Selecciona la opción que mejor represente tu experiencia, revisando cuidadosamente la escala desde "Totalmente en desacuerdo" hasta "Totalmente de acuerdo".
+            </p>
+        </header>
+
+        <div class="readonly-note">
+            🔒 Vista de solo lectura — estas son las respuestas enviadas por el participante. No se pueden modificar desde aquí.
+        </div>
+
+        <!-- Formulario en modo lectura (sin action real) -->
+        <form class="prisma-form" onsubmit="return false;">
+
+            <!-- DATOS DEL PARTICIPANTE -->
+            <section class="form-section">
+                <h3>Datos del Participante</h3>
+                <div class="form-group row">
+                    <div class="input-field">
+                        <label>Nombre completo</label>
+                        <input type="text" value="{{ resp.name }}" readonly>
+                    </div>
+                    <div class="input-field">
+                        <label>Correo electrónico</label>
+                        <input type="email" value="{{ resp.email }}" readonly>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TIEMPO -->
+            <section class="form-section">
+                <h3>SECCIÓN I: REGISTRO DE TIEMPO</h3>
+                <div class="form-group">
+                    <label>Tiempo total invertido en completar todas las fases (minutos):</label>
+                    <br>
+                    <div class="time-display">
+                        ⏱ {{ resp.time_minutes }} <small>minutos</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ESCALA LIKERT -->
+            <section class="form-section">
+                <h3>SECCIÓN II: ESCALA DE DIFICULTAD Y FATIGA</h3>
+                <p class="scale-info">Escala Likert: (1 = Muy fácil / Sin problemas, 5 = Muy difícil / Muy tedioso).</p>
+
+                <h4>Fase 1: Búsqueda y Filtros</h4>
+
+                <!-- Q1 -->
+                <div class="likert-group">
+                    <label>1. Ajustar las palabras clave booleanas y aplicar los filtros manualmente en las bases de datos (ej. PubMed, Semantic Scholar) consumió más tiempo del esperado.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q1_filters == v %}selected{% endif %}">
+                            <input type="radio" name="q1_filters" value="{{ v }}" {% if resp.q1_filters == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="likert-group">
+                    <label>2. Exportar los resultados y consolidarlos en un solo archivo Excel fue una tarea fragmentada y poco fluida.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q2_export == v %}selected{% endif %}">
+                            <input type="radio" name="q2_export" value="{{ v }}" {% if resp.q2_export == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <h4>Fase 2: Deduplicación</h4>
+
+                <!-- Q3 -->
+                <div class="likert-group">
+                    <label>3. Identificar y eliminar artículos duplicados visualmente en la hoja de cálculo representó un esfuerzo mecánico agotador.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q3_dedup_visual == v %}selected{% endif %}">
+                            <input type="radio" name="q3_dedup_visual" value="{{ v }}" {% if resp.q3_dedup_visual == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="likert-group">
+                    <label>4. Siento que el proceso manual en Excel es inseguro y propenso a errores (por ejemplo, no detectar duplicados porque tienen el título ligeramente distinto).</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q4_dedup_error == v %}selected{% endif %}">
+                            <input type="radio" name="q4_dedup_error" value="{{ v }}" {% if resp.q4_dedup_error == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <h4>Fase 3: Screening (Cribado de Títulos y Resúmenes)</h4>
+
+                <!-- Q5 -->
+                <div class="likert-group">
+                    <label>5. Leer secuencialmente los resúmenes sin ningún orden de relevancia (solo en el orden que cayeron en el Excel) me causó un alto nivel de fatiga visual y mental.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q5_screen_fatigue == v %}selected{% endif %}">
+                            <input type="radio" name="q5_screen_fatigue" value="{{ v }}" {% if resp.q5_screen_fatigue == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="likert-group">
+                    <label>6. Al avanzar en la lectura, sentí que mi capacidad de concentración disminuía, aumentando el miedo a descartar un artículo que sí era importante.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q6_screen_fear == v %}selected{% endif %}">
+                            <input type="radio" name="q6_screen_fear" value="{{ v }}" {% if resp.q6_screen_fear == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <h4>Fase 4: Síntesis (Extracción de Datos)</h4>
+
+                <!-- Q7 -->
+                <div class="likert-group">
+                    <label>7. El proceso de abrir los artículos finales, buscar la información clave (ej. Población, Metodología, Resultados) y redactar la matriz de síntesis a mano fue la parte más lenta del proceso.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q7_synthesis_slow == v %}selected{% endif %}">
+                            <input type="radio" name="q7_synthesis_slow" value="{{ v }}" {% if resp.q7_synthesis_slow == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <h4>Fase Transversal: Reproducibilidad</h4>
+
+                <!-- Q8 -->
+                <div class="likert-group">
+                    <label>8. Si tuvieras que repetir esta misma revisión mañana desde cero, considero que NO obtendría exactamente la misma lista final de artículos debido a la alta cantidad de decisiones subjetivas y cruces manuales.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q8_reproducibility == v %}selected{% endif %}">
+                            <input type="radio" name="q8_reproducibility" value="{{ v }}" {% if resp.q8_reproducibility == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- CUALITATIVA -->
+            <section class="form-section">
+                <h3>SECCIÓN III: INDAGACIÓN CUALITATIVA</h3>
+                <div class="form-group">
+                    <label>9. De las 4 fases de PRISMA que acabas de realizar a mano, ¿cuál consideras que es el principal "cuello de botella" y por qué?</label>
+                    <textarea class="textarea-readonly" rows="5" readonly>{{ resp.q9_bottleneck }}</textarea>
+                </div>
+            </section>
+
+        </form>
+    </main>
+</body>
+</html>

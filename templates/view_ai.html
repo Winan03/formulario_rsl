@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Detalle — IA #{{ resp.id }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ─── Admin banner ─── */
+        .admin-banner {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, #1a7a4a, #27ae60);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 3px 15px rgba(39, 174, 96, 0.4);
+            font-family: 'Inter', sans-serif;
+        }
+        .admin-banner .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .banner-badge {
+            background: rgba(255,255,255,0.25);
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .banner-info {
+            font-size: 0.95rem;
+            opacity: 0.92;
+        }
+        .banner-info strong {
+            color: #d5f5e3;
+        }
+        .btn-back {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: background 0.2s;
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.35); }
+
+        /* ─── Read-only on inputs ─── */
+        .prisma-form input,
+        .prisma-form textarea {
+            pointer-events: none;
+            user-select: none;
+            background: #f7f7f7 !important;
+            color: #555 !important;
+            cursor: default;
+        }
+
+        /* Likert — highlight selected */
+        .likert-item input[type="radio"] {
+            display: none;
+        }
+        .likert-item .likert-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: default;
+            min-width: 64px;
+            text-align: center;
+            color: #aaa;
+        }
+        .likert-item.selected .likert-text {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #1a7a4a, #27ae60);
+            color: #fff !important;
+            box-shadow: 0 4px 14px rgba(39, 174, 96, 0.35);
+            transform: scale(1.08);
+        }
+        .likert-item.selected .likert-text small {
+            color: #fff !important;
+            opacity: 0.95;
+        }
+        .likert-item small {
+            font-size: 0.68rem;
+            font-weight: 400;
+            margin-top: 4px;
+            line-height: 1.2;
+        }
+
+        .readonly-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #e8f8f0;
+            border-left: 4px solid #27ae60;
+            padding: 10px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #1a7a4a;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .time-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #e8f8f0;
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a7a4a;
+        }
+        .time-display small {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #999;
+        }
+
+        .textarea-readonly {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #a9dfbf;
+            border-radius: 10px;
+            background: #f0faf5;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.6;
+            resize: none;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Banner -->
+    <div class="admin-banner">
+        <div class="banner-left">
+            <span class="banner-badge">👁 Modo Admin</span>
+            <span class="banner-info">
+                Formulario IA respondido por <strong>{{ resp.name }}</strong>
+                &nbsp;·&nbsp; ID #{{ resp.id }}
+                &nbsp;·&nbsp; {{ resp.created_at.strftime('%d/%m/%Y %H:%M') }}
+            </span>
+        </div>
+        <a href="/admin" class="btn-back">← Volver al Panel</a>
+    </div>
+
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <main class="container">
+
+        <header class="form-header">
+            <h1 style="color: #27ae60;">Guía de Entrevista de Validación</h1>
+            <h2>(Post-Prueba Sistema con IA)</h2>
+            <p class="description">
+                <strong>Objetivo:</strong> Evaluar la eficiencia operativa, la reducción de carga de trabajo y la usabilidad del sistema web automatizado con IA en el proceso de revisión sistemática PRISMA.
+            </p>
+            <p class="instructions">
+                <strong>Instrucciones:</strong> Por favor, lea cada afirmación relacionada con la tarea que acabas de finalizar utilizando la plataforma web. Selecciona la opción que mejor represente tu experiencia, utilizando la escala del 1 (El sistema falló en esto) al 5 (El sistema fue excelente en esto).
+            </p>
+        </header>
+
+        <div class="readonly-note">
+            🔒 Vista de solo lectura — estas son las respuestas enviadas por el participante. No se pueden modificar desde aquí.
+        </div>
+
+        <form class="prisma-form" onsubmit="return false;">
+
+            <!-- DATOS DEL PARTICIPANTE -->
+            <section class="form-section">
+                <h3>Datos del Participante</h3>
+                <div class="form-group row">
+                    <div class="input-field">
+                        <label>Nombre completo</label>
+                        <input type="text" value="{{ resp.name }}" readonly>
+                    </div>
+                    <div class="input-field">
+                        <label>Correo electrónico</label>
+                        <input type="email" value="{{ resp.email }}" readonly>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TIEMPO -->
+            <section class="form-section">
+                <h3>SECCIÓN I: REGISTRO DE TIEMPO (Uso exclusivo del investigador)</h3>
+                <div class="form-group">
+                    <label>Tiempo total invertido en validar los resultados en el sistema (minutos):</label>
+                    <br>
+                    <div class="time-display">
+                        ⏱ {{ resp.time_minutes }} <small>minutos</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LIKERT -->
+            <section class="form-section">
+                <h3>SECCIÓN II: ESCALA DE OPTIMIZACIÓN Y USABILIDAD</h3>
+                <p class="scale-info">Escala Likert: (1 = Totalmente en desacuerdo / No me ayudó, 5 = Totalmente de acuerdo / Me ayudó muchísimo).</p>
+
+                <h4>Fase 1 y 2: Búsqueda Federada y Deduplicación</h4>
+
+                <!-- Q1 -->
+                <div class="likert-group">
+                    <label>1. La búsqueda automatizada y la eliminación de duplicados por el sistema (sin tener que descargar ni cruzar archivos en Excel) me ahorró un esfuerzo mecánico significativo.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q1_ai_dedup_effort == v %}selected{% endif %}">
+                            <input type="radio" name="q1_ai_dedup_effort" value="{{ v }}" {% if resp.q1_ai_dedup_effort == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="likert-group">
+                    <label>2. Confío en que el algoritmo de deduplicación semántica del sistema es más preciso y seguro que mi revisión visual en una hoja de cálculo.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q2_ai_dedup_trust == v %}selected{% endif %}">
+                            <input type="radio" name="q2_ai_dedup_trust" value="{{ v }}" {% if resp.q2_ai_dedup_trust == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <h4>Fase 3: Screening (Cribado Asistido)</h4>
+
+                <!-- Q3 -->
+                <div class="likert-group">
+                    <label>3. Revisar la lista de artículos ya priorizada y pre-clasificada por la Inteligencia Artificial redujo drásticamente mi fatiga visual y mental.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q3_ai_screening_fatigue == v %}selected{% endif %}">
+                            <input type="radio" name="q3_ai_screening_fatigue" value="{{ v }}" {% if resp.q3_ai_screening_fatigue == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="likert-group">
+                    <label>4. Las justificaciones generadas por la IA me dieron seguridad para aceptar o rechazar un artículo rápidamente, eliminando el "miedo a descartar" información importante.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q4_ai_screening_trust == v %}selected{% endif %}">
+                            <input type="radio" name="q4_ai_screening_trust" value="{{ v }}" {% if resp.q4_ai_screening_trust == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <h4>Fase 4: Síntesis Automática (Extracción de Datos)</h4>
+
+                <!-- Q5 -->
+                <div class="likert-group">
+                    <label>5. La matriz de extracción generada automáticamente por el modelo LLM (con Población, Metodología y Resultados) es coherente y redujo el tiempo de redacción manual a casi cero.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q5_ai_synthesis_time == v %}selected{% endif %}">
+                            <input type="radio" name="q5_ai_synthesis_time" value="{{ v }}" {% if resp.q5_ai_synthesis_time == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <h4>Fase Transversal: Reproducibilidad y Viabilidad</h4>
+
+                <!-- Q6 -->
+                <div class="likert-group">
+                    <label>6. Si otro investigador introduce la misma consulta (query) en este sistema mañana, considero que el sistema garantiza la reproducibilidad metodológica del proceso.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q6_ai_reproducibility == v %}selected{% endif %}">
+                            <input type="radio" name="q6_ai_reproducibility" value="{{ v }}" {% if resp.q6_ai_reproducibility == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="likert-group">
+                    <label>7. Considero que el uso de esta plataforma hace que realizar una Revisión Sistemática a gran escala sea un proceso viable, ágil y sostenible para un estudiante de pregrado.</label>
+                    <div class="likert-options">
+                        {% for v in [1,2,3,4,5] %}
+                        <label class="likert-item {% if resp.q7_ai_viability == v %}selected{% endif %}">
+                            <input type="radio" name="q7_ai_viability" value="{{ v }}" {% if resp.q7_ai_viability == v %}checked{% endif %}>
+                            <span class="likert-text">{{ v }}<br><small>{% if v==1 %}Totalmente<br>en desacuerdo{% elif v==2 %}En<br>desacuerdo{% elif v==3 %}<br>Neutral{% elif v==4 %}De<br>acuerdo{% else %}Totalmente<br>de acuerdo{% endif %}</small></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- CUALITATIVA -->
+            <section class="form-section">
+                <h3>SECCIÓN III: INDAGACIÓN CUALITATIVA (Feedback del Sistema)</h3>
+                <div class="form-group">
+                    <label>8. De las funcionalidades que probaste (Búsqueda federada, Cribado asistido, Síntesis LLM), ¿cuál consideras que genera el mayor impacto en la reducción de tu tiempo y por qué?</label>
+                    <textarea class="textarea-readonly" rows="5" readonly>{{ resp.q8_ai_best_feature }}</textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label>9. ¿Notaste algún error, "alucinación" o aspecto de mejora en las respuestas generadas por la Inteligencia Artificial? (Ayuda al rigor de la investigación).</label>
+                    <textarea class="textarea-readonly" rows="5" readonly>{{ resp.q9_ai_hallucinations }}</textarea>
+                </div>
+            </section>
+
+        </form>
+    </main>
+</body>
+</html>

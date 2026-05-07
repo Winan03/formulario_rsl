@@ -343,6 +343,30 @@ async def migrate_db(username: str = Depends(get_current_username), db: Session 
         db.rollback()
         return {"status": "Error", "detalle": str(e)}
 
+@app.get("/admin/view/manual/{response_id}", response_class=HTMLResponse)
+async def view_response_manual(
+    response_id: int,
+    request: Request,
+    username: str = Depends(get_current_username),
+    db: Session = Depends(get_db)
+):
+    resp = db.query(models.EvaluationResponse).filter(models.EvaluationResponse.id == response_id).first()
+    if not resp:
+        raise HTTPException(status_code=404, detail=f"Respuesta manual con ID {response_id} no encontrada.")
+    return templates.TemplateResponse(request=request, name="view_manual.html", context={"resp": resp})
+
+@app.get("/admin/view/ai/{response_id}", response_class=HTMLResponse)
+async def view_response_ai(
+    response_id: int,
+    request: Request,
+    username: str = Depends(get_current_username),
+    db: Session = Depends(get_db)
+):
+    resp = db.query(models.AIEvaluationResponse).filter(models.AIEvaluationResponse.id == response_id).first()
+    if not resp:
+        raise HTTPException(status_code=404, detail=f"Respuesta IA con ID {response_id} no encontrada.")
+    return templates.TemplateResponse(request=request, name="view_ai.html", context={"resp": resp})
+
 @app.get("/admin/export/manual")
 async def export_csv_manual(
     username: str = Depends(get_current_username),

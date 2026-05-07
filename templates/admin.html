@@ -60,6 +60,32 @@
             background: #ff6b81;
         }
 
+        .btn-view {
+            display: inline-block;
+            background: #8e44ad;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-view:hover {
+            background: #9b59b6;
+            transform: translateY(-1px);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
         .truncate {
             max-width: 250px;
             white-space: nowrap;
@@ -170,9 +196,12 @@
                         <td>{{ resp.q8_reproducibility }}</td>
                         <td class="truncate" title="{{ resp.q9_bottleneck }}">{{ resp.q9_bottleneck }}</td>
                         <td>
-                            <form action="/admin/delete/manual/{{ resp.id }}" method="POST" onsubmit="return confirm('¿Seguro de borrar esta fila manual?');">
-                                <button type="submit" class="btn-delete">Borrar</button>
-                            </form>
+                            <div class="actions-cell">
+                                <a href="/admin/view/manual/{{ resp.id }}" class="btn-view" title="Ver formulario respondido">👁 Ver</a>
+                                <form action="/admin/delete/manual/{{ resp.id }}" method="POST" onsubmit="return confirm('¿Seguro de borrar esta fila manual?');" style="margin:0;">
+                                    <button type="submit" class="btn-delete">Borrar</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
@@ -232,9 +261,12 @@
                         <td class="truncate" title="{{ resp.q8_ai_best_feature }}">{{ resp.q8_ai_best_feature }}</td>
                         <td class="truncate" title="{{ resp.q9_ai_hallucinations }}">{{ resp.q9_ai_hallucinations }}</td>
                         <td>
-                            <form action="/admin/delete/ai/{{ resp.id }}" method="POST" onsubmit="return confirm('¿Seguro de borrar esta fila de IA?');">
-                                <button type="submit" class="btn-delete">Borrar</button>
-                            </form>
+                            <div class="actions-cell">
+                                <a href="/admin/view/ai/{{ resp.id }}" class="btn-view" title="Ver formulario respondido">👁 Ver</a>
+                                <form action="/admin/delete/ai/{{ resp.id }}" method="POST" onsubmit="return confirm('¿Seguro de borrar esta fila de IA?');" style="margin:0;">
+                                    <button type="submit" class="btn-delete">Borrar</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
